@@ -6,11 +6,8 @@ http://web.mit.edu/drela/Public/web/xfoil/
 
 The goals of this project are (in order of importance):
 
-	To produce a code that can be easily used, understood, modified, and extended by its users
-  
-	To produce a code that is robust
-  
-	To produce a code that is powerful
-  
-	To produce a code that is fast
+    1.	To produce a code that can be easily used, understood, modified, and extended by its users
+    2.	To produce a code that is robust
+    3.	To produce a code that is powerful
+    4.	To produce a code that is fast
 
