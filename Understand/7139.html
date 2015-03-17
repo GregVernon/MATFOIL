@@ -1,0 +1,83 @@
+<html><head><title>frplot.f</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link rel="stylesheet" type="text/css" href="sourcestyles.css" />
+</head><body link="blue" vlink="blue">
+<h3>File: C:\Users\Greg\Downloads\xfoil6.97.tar\Xfoil\src\frplot.f</h3>
+<SCRIPT>
+defaultStatus = "File: C:\\Users\\Greg\\Downloads\\xfoil6.97.tar\\Xfoil\\src\\frplot.f";
+top.document.title  = "frplot.f";
+</SCRIPT>
+<pre><span class="default"></span><a name="1"><font size=-1>1     </font></a><span class="default"></span>
+<a name="2"><font size=-1>2     </font></a><span class="default">      </span><span class="keyword">SUBROUTINE <a href="dictionary_F.html#3912">FRPLOT</a></span><span class="default">(<a href="dictionary_F.html#6897">N</a>,<a href="dictionary_S.html#7149">S</a>,<a href="dictionary_X.html#7153">X</a>,<a href="dictionary_H.html#7144">HK</a>,<a href="dictionary_T.html#7150">TH</a>,<a href="dictionary_U.html#7151">UE</a>,<a href="dictionary_V.html#7152">VE</a>,<a href="dictionary_F.html#6905">XTR</a>,<a href="dictionary_F.html#6895">FREF</a>,</span>
+<a name="3"><font size=-1>3     </font></a><span class="default">     &amp;                  <a href="dictionary_F.html#6903">XOFF</a>,<a href="dictionary_F.html#6904">XSF</a>, <a href="dictionary_F.html#6906">YOFF</a>,<a href="dictionary_F.html#6907">YSF</a>, <a href="dictionary_F.html#6894">CHF</a>)</span>
+<a name="4"><font size=-1>4     </font></a><span class="default">      </span><span class="keyword">DIMENSION <a href="dictionary_S.html#7149">S</a></span><span class="default">(<a href="dictionary_F.html#6897">N</a>+</span><span class="number">1</span><span class="default">), <a href="dictionary_X.html#7153">X</a>(<a href="dictionary_F.html#6897">N</a>+</span><span class="number">1</span><span class="default">), <a href="dictionary_H.html#7144">HK</a>(<a href="dictionary_F.html#6897">N</a>+</span><span class="number">1</span><span class="default">), <a href="dictionary_T.html#7150">TH</a>(<a href="dictionary_F.html#6897">N</a>+</span><span class="number">1</span><span class="default">), <a href="dictionary_U.html#7151">UE</a>(<a href="dictionary_F.html#6897">N</a>+</span><span class="number">1</span><span class="default">), <a href="dictionary_V.html#7152">VE</a>(<a href="dictionary_F.html#6897">N</a>+</span><span class="number">1</span><span class="default">)</span>
+<a name="5"><font size=-1>5     </font></a><span class="default"></span><span class="comment">C------------------------------------------------------------</span>
+<a name="6"><font size=-1>6     </font></a><span class="comment">C     Plots the amplitude A(x) for a specified number </span>
+<a name="7"><font size=-1>7     </font></a><span class="comment">C     of frequencies.  The frequency values which are </span>
+<a name="8"><font size=-1>8     </font></a><span class="comment">C     used are set internally in the amplitude calculation</span>
+<a name="9"><font size=-1>9     </font></a><span class="comment">C     routine NTCALC, and displayed here.</span>
+<a name="10"><font size=-1>10     </font></a><span class="comment">C</span>
+<a name="11"><font size=-1>11     </font></a><span class="comment">C     N       number of laminar streamwise points i </span>
+<a name="12"><font size=-1>12     </font></a><span class="comment">C              (transition is in interval N...N+1)</span>
+<a name="13"><font size=-1>13     </font></a><span class="comment">C     S(i)    streamwise arc length for integrating -a_i = d[ln(A)]/ds</span>
+<a name="14"><font size=-1>14     </font></a><span class="comment">C     X(i)    plotting x coordinate </span>
+<a name="15"><font size=-1>15     </font></a><span class="comment">C     HK(i)   kinematic shape parameter</span>
+<a name="16"><font size=-1>16     </font></a><span class="comment">C     TH(i)   momentum thickness</span>
+<a name="17"><font size=-1>17     </font></a><span class="comment">C     UE(i)   edge velocity</span>
+<a name="18"><font size=-1>18     </font></a><span class="comment">C     VE(i)   edge kinematic viscosity</span>
+<a name="19"><font size=-1>19     </font></a><span class="comment">C     XTR     transition x location,  should be  X(N) &lt; XTR &lt; X(N+1)</span>
+<a name="20"><font size=-1>20     </font></a><span class="comment">C</span>
+<a name="21"><font size=-1>21     </font></a><span class="comment">C     FREF    reference radian frequency (w/FREF is displayed)</span>
+<a name="22"><font size=-1>22     </font></a><span class="comment">C</span>
+<a name="23"><font size=-1>23     </font></a><span class="comment">C     XOFF    plotting offsets, scales...  Xplot = (X-XOFF)*XSF</span>
+<a name="24"><font size=-1>24     </font></a><span class="comment">C     YOFF                                 Yplot = (Y-YOFF)*YSF</span>
+<a name="25"><font size=-1>25     </font></a><span class="comment">C     XSF</span>
+<a name="26"><font size=-1>26     </font></a><span class="comment">C     YSF</span>
+<a name="27"><font size=-1>27     </font></a><span class="comment">C</span>
+<a name="28"><font size=-1>28     </font></a><span class="comment">C     CHF     character height</span>
+<a name="29"><font size=-1>29     </font></a><span class="comment">C------------------------------------------------------------     </span>
+<a name="30"><font size=-1>30     </font></a><span class="comment">C</span>
+<a name="31"><font size=-1>31     </font></a><span class="comment">C---- max number of streamwise points and frequencies</span>
+<a name="32"><font size=-1>32     </font></a><span class="comment">      </span><span class="keyword">PARAMETER </span><span class="default">(<a href="dictionary_I.html#7145">IDIM</a>=</span><span class="number">300</span><span class="default">,<a href="dictionary_N.html#7148">NFX</a>=</span><span class="number">15</span><span class="default">)</span>
+<a name="33"><font size=-1>33     </font></a><span class="default"></span><span class="comment">ccc      PARAMETER (IDIM=300,NFX=50)</span>
+<a name="34"><font size=-1>34     </font></a><span class="comment">C</span>
+<a name="35"><font size=-1>35     </font></a><span class="comment">      </span><span class="keyword">DIMENSION <a href="dictionary_F.html#7143">FREQ</a></span><span class="default">(<a href="dictionary_N.html#7148">NFX</a>), <a href="dictionary_A.html#7140">ANF</a>(<a href="dictionary_I.html#7145">IDIM</a>,<a href="dictionary_N.html#7148">NFX</a>)</span>
+<a name="36"><font size=-1>36     </font></a><span class="default"></span><span class="comment">C</span>
+<a name="37"><font size=-1>37     </font></a><span class="comment">      </span><span class="keyword">IF</span><span class="default">(<a href="dictionary_F.html#6897">N</a>+</span><span class="number">1 </span><span class="default">.GT. <a href="dictionary_I.html#7145">IDIM</a>) </span><span class="keyword">STOP </span><span class="string">'FRPLOT: Array overflow.  Increase IDIM.'</span>
+<a name="38"><font size=-1>38     </font></a><span class="string"></span><span class="comment">C</span>
+<a name="39"><font size=-1>39     </font></a><span class="comment">C---- set number of frequencies plotted</span>
+<a name="40"><font size=-1>40     </font></a><span class="comment">      <a href="dictionary_N.html#7147">NFR</a> </span><span class="default">= <a href="dictionary_N.html#7148">NFX</a></span>
+<a name="41"><font size=-1>41     </font></a><span class="default"></span><span class="comment">C</span>
+<a name="42"><font size=-1>42     </font></a><span class="comment">C---- calculate wave amplitudes for each frequency</span>
+<a name="43"><font size=-1>43     </font></a><span class="comment">      </span><span class="keyword">CALL <a href="dictionary_N.html#3077">NTCALC</a></span><span class="default">(<a href="dictionary_I.html#7145">IDIM</a>,<a href="dictionary_F.html#6897">N</a>+</span><span class="number">1</span><span class="default">, <a href="dictionary_S.html#7149">S</a>,<a href="dictionary_H.html#7144">HK</a>,<a href="dictionary_T.html#7150">TH</a>,<a href="dictionary_U.html#7151">UE</a>,<a href="dictionary_V.html#7152">VE</a>,</span>
+<a name="44"><font size=-1>44     </font></a><span class="default">     &amp;            <a href="dictionary_N.html#7147">NFR</a>,<a href="dictionary_F.html#7143">FREQ</a>,<a href="dictionary_A.html#7140">ANF</a>)</span>
+<a name="45"><font size=-1>45     </font></a><span class="default"></span><span class="comment">C</span>
+<a name="46"><font size=-1>46     </font></a><span class="comment">C---- plot amplitudes for all frequencies</span>
+<a name="47"><font size=-1>47     </font></a><span class="comment">      <a href="dictionary_X.html#7154">X1</a> </span><span class="default">= <a href="dictionary_X.html#7153">X</a>(<a href="dictionary_F.html#6897">N</a>)</span>
+<a name="48"><font size=-1>48     </font></a><span class="default">      <a href="dictionary_X.html#7155">X2</a> = <a href="dictionary_F.html#6905">XTR</a></span>
+<a name="49"><font size=-1>49     </font></a><span class="default">      <a href="dictionary_F.html#7142">FRAC</a> = (<a href="dictionary_X.html#7155">X2</a>-<a href="dictionary_X.html#7154">X1</a>)/(<a href="dictionary_X.html#7153">X</a>(<a href="dictionary_F.html#6897">N</a>+</span><span class="number">1</span><span class="default">)-<a href="dictionary_X.html#7154">X1</a>)</span>
+<a name="50"><font size=-1>50     </font></a><span class="default">      </span><span class="keyword">DO </span><span class="number">10 <a href="dictionary_I.html#7146">IFR</a></span><span class="default">=</span><span class="number">1</span><span class="default">, <a href="dictionary_N.html#7147">NFR</a></span>
+<a name="51"><font size=-1>51     </font></a><span class="default"></span><span class="comment">C</span>
+<a name="52"><font size=-1>52     </font></a><span class="comment">C------ plot A(x) up to the transition interval</span>
+<a name="53"><font size=-1>53     </font></a><span class="comment">        </span><span class="keyword">CALL <a href="dictionary_X.html#1996">XYLINE</a></span><span class="default">(<a href="dictionary_F.html#6897">N</a>,<a href="dictionary_X.html#7153">X</a>,<a href="dictionary_A.html#7140">ANF</a>(</span><span class="number">1</span><span class="default">,<a href="dictionary_I.html#7146">IFR</a>),<a href="dictionary_F.html#6903">XOFF</a>,<a href="dictionary_F.html#6904">XSF</a>,<a href="dictionary_F.html#6906">YOFF</a>,<a href="dictionary_F.html#6907">YSF</a>,</span><span class="number">1</span><span class="default">)</span>
+<a name="54"><font size=-1>54     </font></a><span class="default"></span><span class="comment">C</span>
+<a name="55"><font size=-1>55     </font></a><span class="comment">C------ plot last bit to the transition location in the transition interval</span>
+<a name="56"><font size=-1>56     </font></a><span class="comment">        <a href="dictionary_Y.html#7157">Y1</a> </span><span class="default">= <a href="dictionary_A.html#7140">ANF</a>(<a href="dictionary_F.html#6897">N</a>,<a href="dictionary_I.html#7146">IFR</a>)</span>
+<a name="57"><font size=-1>57     </font></a><span class="default">        <a href="dictionary_Y.html#7158">Y2</a> = <a href="dictionary_A.html#7140">ANF</a>(<a href="dictionary_F.html#6897">N</a>,<a href="dictionary_I.html#7146">IFR</a>) + <a href="dictionary_F.html#7142">FRAC</a>*(<a href="dictionary_A.html#7140">ANF</a>(<a href="dictionary_F.html#6897">N</a>+</span><span class="number">1</span><span class="default">,<a href="dictionary_I.html#7146">IFR</a>)-<a href="dictionary_A.html#7140">ANF</a>(<a href="dictionary_F.html#6897">N</a>,<a href="dictionary_I.html#7146">IFR</a>))</span>
+<a name="58"><font size=-1>58     </font></a><span class="default">        </span><span class="keyword">CALL <a href="dictionary_P.html#17">PLOT</a></span><span class="default">((<a href="dictionary_X.html#7154">X1</a>-<a href="dictionary_F.html#6903">XOFF</a>)*<a href="dictionary_F.html#6904">XSF</a>,(<a href="dictionary_Y.html#7157">Y1</a>-<a href="dictionary_F.html#6906">YOFF</a>)*<a href="dictionary_F.html#6907">YSF</a>,</span><span class="number">3</span><span class="default">)</span>
+<a name="59"><font size=-1>59     </font></a><span class="default">        </span><span class="keyword">CALL <a href="dictionary_P.html#17">PLOT</a></span><span class="default">((<a href="dictionary_X.html#7155">X2</a>-<a href="dictionary_F.html#6903">XOFF</a>)*<a href="dictionary_F.html#6904">XSF</a>,(<a href="dictionary_Y.html#7158">Y2</a>-<a href="dictionary_F.html#6906">YOFF</a>)*<a href="dictionary_F.html#6907">YSF</a>,</span><span class="number">2</span><span class="default">)</span>
+<a name="60"><font size=-1>60     </font></a><span class="default"></span><span class="comment">C</span>
+<a name="61"><font size=-1>61     </font></a><span class="comment">C------ label the curve with its frequency if it grew to more than ANFMIN</span>
+<a name="62"><font size=-1>62     </font></a><span class="comment">        <a href="dictionary_A.html#7141">ANFMIN</a> </span><span class="default">= </span><span class="number">0.5</span>
+<a name="63"><font size=-1>63     </font></a><span class="number">        </span><span class="keyword">IF</span><span class="default">(<a href="dictionary_M.html#692">MAX</a>(<a href="dictionary_A.html#7140">ANF</a>(<a href="dictionary_F.html#6897">N</a>,<a href="dictionary_I.html#7146">IFR</a>),<a href="dictionary_A.html#7140">ANF</a>(<a href="dictionary_F.html#6897">N</a>+</span><span class="number">1</span><span class="default">,<a href="dictionary_I.html#7146">IFR</a>)) .GT. <a href="dictionary_A.html#7141">ANFMIN</a>) </span><span class="keyword">THEN</span>
+<a name="64"><font size=-1>64     </font></a><span class="keyword">         <a href="dictionary_X.html#7156">XNUM</a> </span><span class="default">= (<a href="dictionary_X.html#7155">X2</a>-<a href="dictionary_F.html#6903">XOFF</a>)*<a href="dictionary_F.html#6904">XSF</a> + </span><span class="number">0.5</span><span class="default">*<a href="dictionary_F.html#6894">CHF</a></span>
+<a name="65"><font size=-1>65     </font></a><span class="default">         <a href="dictionary_Y.html#7159">YNUM</a> = (<a href="dictionary_Y.html#7158">Y2</a>-<a href="dictionary_F.html#6906">YOFF</a>)*<a href="dictionary_F.html#6907">YSF</a> - </span><span class="number">0.5</span><span class="default">*<a href="dictionary_F.html#6894">CHF</a></span>
+<a name="66"><font size=-1>66     </font></a><span class="default">         </span><span class="keyword">CALL <a href="dictionary_P.html#984">PLNUMB</a></span><span class="default">(<a href="dictionary_X.html#7156">XNUM</a>,<a href="dictionary_Y.html#7159">YNUM</a>,<a href="dictionary_F.html#6894">CHF</a>,<a href="dictionary_F.html#7143">FREQ</a>(<a href="dictionary_I.html#7146">IFR</a>)/<a href="dictionary_F.html#6895">FREF</a>,</span><span class="number">0.0</span><span class="default">,</span><span class="number">2</span><span class="default">)</span>
+<a name="67"><font size=-1>67     </font></a><span class="default">        </span><span class="keyword">ENDIF</span>
+<a name="68"><font size=-1>68     </font></a><span class="keyword"></span><span class="comment">C</span>
+<a name="69"><font size=-1>69     </font></a><span class="comment"> 10   </span><span class="keyword">CONTINUE</span>
+<a name="70"><font size=-1>70     </font></a><span class="keyword"></span><span class="comment">C</span>
+<a name="71"><font size=-1>71     </font></a><span class="comment">      </span><span class="default">RETURN</span>
+<a name="72"><font size=-1>72     </font></a><span class="default">      </span><span class="keyword">END</span>
+<a name="73"><font size=-1>73     </font></a><span class="keyword"></span>
+</pre></body></html>
